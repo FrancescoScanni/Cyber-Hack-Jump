@@ -1,1 +1,2 @@
-import kaboom from './kaboomLoader.js';
+import k from './kaboomLoader.js';
+
