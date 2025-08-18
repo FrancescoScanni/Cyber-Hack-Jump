@@ -14,6 +14,15 @@ export function loadStartingScene(){
 //scene 1
 export function loadGameScene(){
     scene("game", () => {
+
+        //floating message
+        const message = document.querySelector("#advice")
+        setTimeout(()=>{
+            message.style.opacity="1"
+        },700)
+        setTimeout(()=>{
+            message.style.opacity="0"
+        },7000)
         const bg = add([
             sprite("bg", { width: width(), height: height() })
         ]) //background
@@ -30,6 +39,7 @@ export function loadGameScene(){
             area(),
             body(),
             scale(0.35),
+            "player"
         ]);//player
 
 
@@ -50,20 +60,28 @@ export function loadGameScene(){
         //blocks dragging
         player.onCollide("platform", ()=>{
             player.move(-50,0)
+        })  
+        //score
+        player.onCollide("coin", ()=>{
+            console.log("ok")
         })    
+        //death
+        player.onCollide("malware", ()=>{
+            go("gameover")
+        }) 
         
-
+        
         //BLOCKS SPAWNING
         let previous = "block4_grJump";
         let lastBlock = null;
         let cycle = 0
+        let spawnX;
+        let blockY = 580;
         //
         function spawnRndGRBlock() {
-        let blockSpeed = 150;
-        let blockY = 580;
+        let blockSpeed = 190;
         let bkName = choose(blockNamesGround);
-        let spawnX;
-            
+          
         if (previous === "block4_grJump" || previous === "block4_grJump1" || previous === "block4_grJump2") {
             bkName = choose(["block1_small", "block5_fire", "block5_spike"]);
         }
@@ -129,6 +147,7 @@ export function loadGameScene(){
         });
         cycle++
 
+
         //BLOCKS VARIABLE PROPERTIES
         const block = add([
             sprite(bkName),
@@ -139,8 +158,63 @@ export function loadGameScene(){
             move(LEFT, blockSpeed),
             "platform",
         ]);
+        
+
+        //COINS GENERATION
         const realWidth = block.width * block.scale.x;
         block.realWidth = realWidth;
+        let coinAlready=false
+        if (Math.floor(Math.random() * 3) === 1) {
+            coinAlready=true
+            const coin = add([
+                sprite("coin"),
+                pos(spawnX + realWidth / 2, blockY - 100),
+                scale(0.1),
+                area(),
+                move(LEFT, blockSpeed),
+                "coin"
+            ]);
+            coin.onCollide("player",()=>{
+                coin.destroy()
+            })
+            let up=false
+            setInterval(()=>{
+                if(up){
+                    coin.pos.y-=5
+                    up=false
+                }else{
+                    coin.pos.y+=5
+                    up=true
+                }
+            },500)
+        }
+        else{
+            coinAlready=false
+        }
+
+
+        //MALWARE GENERATION
+        if (Math.floor(Math.random() * 12) === 1 && !coinAlready) {
+            const malware = add([
+                sprite("malware"),
+                pos(spawnX + realWidth / 2, blockY - 100),
+                scale(0.15),
+                area(),
+                move(LEFT, blockSpeed),
+                "malware"
+            ]);
+            let up=false
+            setInterval(()=>{
+                if(up){
+                    malware.pos.x-=7
+                    up=false
+                }else{
+                    malware.pos.x+=7
+                    up=true
+                }
+            },500)
+        }
+
 
         //BLOCKS IN SEQUENCE
         block.onUpdate(() => {
@@ -155,12 +229,17 @@ export function loadGameScene(){
         lastBlock = block;
     }
     spawnRndGRBlock();
+
+    
 });
 }
 
 //scene 2
 export function loadGOScene(){
     scene("gameover", () => {
+         const bg = add([
+            sprite("bg", { width: width(), height: height() })
+        ]);
         add([
             text("Game Over!"),
             pos(width() / 2, height() / 2),

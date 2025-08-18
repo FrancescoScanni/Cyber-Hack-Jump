@@ -6,3 +6,11 @@
 .dis2{
     display: none;
 }
+.musicDown{
+    opacity: 0.5;
+}
+
+/*heading message anm*/
+.dash{
+    display: block;
+}

@@ -11,7 +11,19 @@
 <body class="w-[100vw] h-[100vh] overflow-hidden">
     <audio class="music" src="src/static/sounds/soundtrack.mp3"></audio>
 
+    <!--Floating message-->
+    <div id="advice" class="advice absolute mt-[17vh] flex inline w-[100vw] justify-center tracking-[0px] opacity-0 transition duration-500">
+        <h1 class="text-[#ffffff] text-[26px] flex items-center gap-2 text-center">
+            Press 
+            <img src="src/static/images/spacebar.png" class="mx-[10px] w-[140px] h-[70px] object-contain" />
+            to jump and 
+            <img src="src/static/images/mvForward.png" class="mx-[10px] w-[70px] h-[70px] object-contain" />
+            to move forward
+        </h1>
+    </div>
 
+
+    <!--Main content-->
     <div id="canvas" class="w-[100vw] h-[100vh] absolute flex justify-center align-center grid grid-cols-3">
         <!--Rule set-->
         <div class="rules flex justify-center items-center hover:scale-105 transition duration-200 relative">
@@ -39,6 +51,7 @@
         </div>
         <!--Logo and starting button-->
         <div class="main flex flex-col items-center mt-[7vh]">
+
             <img src="src\static\images\logo.png" class="hover:scale-105 transition duration-200 w-[450p] h-[390px]">
             <div id="playButton" class="flex items-center justify-center w-[14vw] h-[12vh] mt-[7vh] text-[22px] text-[#FFD93D] bg-[#0A0F1E] tracking-[2px] border-[#00E0FF] rounded-md shadow-[0_0_10px_#00E0FF,0_0_20px_#00E0FF_inset] transition duration-200 ease-in-out hover:shadow-[0_0_8px_#FFD93D,0_0_15px_#FFD93D_inset] active:scale-95 hover:scale-105 active:shadow-[0_0_15px_#FF3D6E,0_0_30px_#FF3D6E_inset]">
                 <input class="start " type="button" value="Play">
