@@ -8,7 +8,50 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <title>Cyber Hack Jump - Desktop Game</title>
 </head>
-<body class="w-[100vw] h-[100vh]">
-    
+<body class="w-[100vw] h-[100vh] overflow-hidden">
+    <div class="canvas w-[100vw] h-[100vh] absolute flex justify-center align-center grid grid-cols-3">
+
+        <!--Rules set-->
+        <div class="rules flex justify-center items-center hover:scale-105 transition duration-200 relative">
+            <div class="ruleBox px-[34px] py-[34px] pb-[37px] max-w-[360px] text-[#FFD93D] bg-[#0A0F1E] border-[#00E0FF] rounded-md shadow-[0_0_10px_#00E0FF,0_0_20px_#00E0FF_inset]">
+                <h1 class="text-center">Rules</h1>
+                <ul class="list-disc list-inside mt-[20px] space-y-2 text-[#FFD93D] text-[11px] font-['Press_Start_2P'] text-[#ffffff] hover:text-[#00B4FF] transition duration-200">
+                    <div class="flex ">
+                        <li>Collect 100 coins total to win</li>
+                        <img src="src\static\images\coin.png" class=" h-[50px] ml-[20px]">
+                    </div>
+                    <div class="flex ">
+                        <li>Avoid colliding into "bad blocks"</li>
+                        <img src="src\static\images\crossHalt.png" class="scale-90 h-[50px] ">
+                    </div>
+                    <div class="flex ">
+                        <li>Jump to survive falls</li>
+                        <img src="src\static\images\jumpVector.png" class=" h-[50px] ml-[20px] rotate-[-90deg]">
+                    </div>
+                    <div class="flex ">
+                        <li>Don't trust every single floating item</li>
+                        <img src="src\static\images\malware.png" class="w-[19%] h-[50px] ">
+                    </div>
+                </ul>
+            </div>
+        </div>
+
+        <!--Logo and starting button-->
+        <div class="main flex flex-col items-center mt-[7vh]">
+            <img src="src\static\images\logo.png" class="hover:scale-105 transition duration-200 w-[450p] h-[390px]">
+            <div class="flex items-center justify-center w-[14vw] h-[12vh] mt-[7vh] text-[22px] text-[#FFD93D] bg-[#0A0F1E] tracking-[2px] border-[#00E0FF] rounded-md shadow-[0_0_10px_#00E0FF,0_0_20px_#00E0FF_inset] transition duration-200 ease-in-out hover:shadow-[0_0_8px_#FFD93D,0_0_15px_#FFD93D_inset] active:scale-95 hover:scale-105 active:shadow-[0_0_15px_#FF3D6E,0_0_30px_#FF3D6E_inset]">
+                <input class="start " type="button" value="Play">
+                <img src="src\static\images\start.png" class="w-[40px] h-[40px] rotate-90 ml-[10px]">
+            </div>
+        </div>
+
+        <!--Your character-->
+        <div class="character flex flex-col justify-center items-center mr-[100px]">
+            <img src="src\static\images\player.png" class="w-[270px] h-[320px] hover:scale-105 transition duration-200">
+            <div class="mt-[25px] p-[10px] max-w-[360px] text-[#FFD93D] bg-[#0A0F1E] border-[#00E0FF] rounded-md shadow-[0_0_10px_#00E0FF,0_0_20px_#00E0FF_inset]">
+                <h1 class="text-[#FFD93D] text-[18px]">Your character</h1>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

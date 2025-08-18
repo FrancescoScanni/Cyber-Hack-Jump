@@ -9,21 +9,31 @@ kaboom({
     global: true,
 });
 
-gravity(1200);
+gravity(100);
 
-let blockNamesGround = [
-    "block1_small",
-    "block4_grJump",
-    "block4_grJump1",
-    "block4_grJump2",
-    "block5_fire",
-    "block5_spike"
-];
+let blockNamesGround = ["block1_small","block4_grJump","block4_grJump1","block4_grJump2","block5_fire","block5_spike"];
 let players = ["hk_main1","hk_main2","hk_main3","hk_main4"];
-
+loadSprite("logo","assets/sprite/logo.png")
 loadSprite("bg", "assets/sprite/bg.png");
+loadSprite("jump", "assets/sprite/jump.png")
 blockNamesGround.forEach(name => loadSprite(name, `assets/sprite/ground/${name}.png`));
 players.forEach(name => loadSprite(name, `assets/sprite/characters/${name}.png`));
+
+
+
+
+scene("start",()=>{
+    const bg = add([
+        sprite("bg", { width: width(), height: height() })
+    ]);
+    add([
+        //sprite("logo"),
+        pos(width()/3,height()-650),
+
+    ])
+    
+})
+
 
 scene("game", () => {
     const bg = add([
@@ -51,13 +61,7 @@ scene("game", () => {
         currentFrame = (currentFrame + 1) % players.length;
         player.use(sprite(players[currentFrame]));
     }, 165);
-    // jump
-    player.onUpdate
-    onKeyPress(["space", "up", "w"], () => {
-        if (player.isGrounded()) {
-            player.jump(720);
-        }
-    });
+    
     //movement
     onKeyDown("right", () => {
     if (!player.isGrounded()) {
@@ -117,9 +121,36 @@ scene("game", () => {
     }
 
     //the first block is always the standard one
+    let jumpUp
+    let up_down =false
+
+    //player's jump and sprite
     if(cycle===0){
         bkName="block1_small"
+        jumpUp = add([
+            sprite("jump"),
+            pos(spawnX-200, blockY-155),
+            move(LEFT, blockSpeed),
+            scale(0.32)
+        ])
+        setInterval(() => {
+            if(!up_down){
+                jumpUp.pos.y += 20;
+                up_down=true
+            }
+            else{
+                jumpUp.pos.y -= 20;
+                up_down=false
+            }
+            
+    }, 700);
     }
+    onKeyPress(["space", "up", "w"], () => {
+        if (player.isGrounded()) {
+            player.jump(720);
+            destroy(jumpUp)
+        }
+    });
     cycle++
 
 
@@ -133,10 +164,7 @@ scene("game", () => {
         "platform",
     ]);
 
-    
-    
-    
-    
+
     const realWidth = block.width * block.scale.x;
     block.realWidth = realWidth;
 
@@ -151,7 +179,7 @@ scene("game", () => {
     });
     lastBlock = block;
 }
-spawnRndGRBlock()
+spawnRndGRBlock();
 
 
 
@@ -168,4 +196,6 @@ scene("gameover", () => {
     ]);
 });
 
-go("game");
+go("start");
+//go("game")
+
