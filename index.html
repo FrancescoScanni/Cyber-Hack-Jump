@@ -9,9 +9,11 @@
     <title>Cyber Hack Jump - Desktop Game</title>
 </head>
 <body class="w-[100vw] h-[100vh] overflow-hidden">
-    <div class="canvas w-[100vw] h-[100vh] absolute flex justify-center align-center grid grid-cols-3">
+    <audio class="music" src="src/static/sounds/soundtrack.mp3"></audio>
 
-        <!--Rules set-->
+
+    <div id="canvas" class="w-[100vw] h-[100vh] absolute flex justify-center align-center grid grid-cols-3">
+        <!--Rule set-->
         <div class="rules flex justify-center items-center hover:scale-105 transition duration-200 relative">
             <div class="ruleBox px-[34px] py-[34px] pb-[37px] max-w-[360px] text-[#FFD93D] bg-[#0A0F1E] border-[#00E0FF] rounded-md shadow-[0_0_10px_#00E0FF,0_0_20px_#00E0FF_inset]">
                 <h1 class="text-center">Rules</h1>
@@ -35,16 +37,14 @@
                 </ul>
             </div>
         </div>
-
         <!--Logo and starting button-->
         <div class="main flex flex-col items-center mt-[7vh]">
             <img src="src\static\images\logo.png" class="hover:scale-105 transition duration-200 w-[450p] h-[390px]">
-            <div class="flex items-center justify-center w-[14vw] h-[12vh] mt-[7vh] text-[22px] text-[#FFD93D] bg-[#0A0F1E] tracking-[2px] border-[#00E0FF] rounded-md shadow-[0_0_10px_#00E0FF,0_0_20px_#00E0FF_inset] transition duration-200 ease-in-out hover:shadow-[0_0_8px_#FFD93D,0_0_15px_#FFD93D_inset] active:scale-95 hover:scale-105 active:shadow-[0_0_15px_#FF3D6E,0_0_30px_#FF3D6E_inset]">
+            <div id="playButton" class="flex items-center justify-center w-[14vw] h-[12vh] mt-[7vh] text-[22px] text-[#FFD93D] bg-[#0A0F1E] tracking-[2px] border-[#00E0FF] rounded-md shadow-[0_0_10px_#00E0FF,0_0_20px_#00E0FF_inset] transition duration-200 ease-in-out hover:shadow-[0_0_8px_#FFD93D,0_0_15px_#FFD93D_inset] active:scale-95 hover:scale-105 active:shadow-[0_0_15px_#FF3D6E,0_0_30px_#FF3D6E_inset]">
                 <input class="start " type="button" value="Play">
                 <img src="src\static\images\start.png" class="w-[40px] h-[40px] rotate-90 ml-[10px]">
             </div>
         </div>
-
         <!--Your character-->
         <div class="character flex flex-col justify-center items-center mr-[100px]">
             <img src="src\static\images\player.png" class="w-[270px] h-[320px] hover:scale-105 transition duration-200">
@@ -52,6 +52,9 @@
                 <h1 class="text-[#FFD93D] text-[18px]">Your character</h1>
             </div>
         </div>
+
+        <!--Music icon-->
+        <img src="src\static\images\music.png" class="musicButton w-[88px] h-[84px] ml-[90vw] hover:scale-105 transition duration-200">
     </div>
 </body>
 </html>

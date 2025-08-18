@@ -1,0 +1,8 @@
+/*game intf start*/
+.disappear {
+      opacity: 0;
+      transform: translateY(-100px);
+}
+.dis2{
+    display: none;
+}

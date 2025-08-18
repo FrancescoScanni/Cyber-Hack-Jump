@@ -1,6 +1,11 @@
 /*Fonts*/
 @import url("fonts.css");
 
+@import url("elementsAnim.css");
+
 body{
     background-color: #191a19;
+}
+#canvas{
+    transition: opacity 0.7s ease, transform 0.7s ease;
 }
