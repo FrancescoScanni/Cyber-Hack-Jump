@@ -3,6 +3,9 @@
       opacity: 0;
       transform: translateY(-100px);
 }
+.dis3{
+    opacity: 0;
+}
 .dis2{
     display: none;
 }

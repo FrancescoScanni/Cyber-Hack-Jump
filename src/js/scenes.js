@@ -62,11 +62,11 @@ export function loadGameScene(){
             player.move(-50,0)
         })  
         //score
-        player.onCollide("coin", ()=>{
-            console.log("ok")
-        })    
+
         //death
         player.onCollide("malware", ()=>{
+            const failMusic = new Audio("src/static/sounds/fail.mp3")
+            failMusic.play()
             go("gameover")
         }) 
         
@@ -88,7 +88,6 @@ export function loadGameScene(){
         if (previous === "block5_fire" || previous === "block5_spike") {
             bkName = "block1_small";
         }
-
         switch(bkName){
             case "block4_grJump2":
                 blockY = 500;
@@ -106,7 +105,6 @@ export function loadGameScene(){
                 blockY = 540.3;
                 break
         }
-
         previous = bkName;
         if (lastBlock) {
             spawnX = lastBlock.pos.x + lastBlock.realWidth
@@ -175,6 +173,8 @@ export function loadGameScene(){
                 "coin"
             ]);
             coin.onCollide("player",()=>{
+                const coinSound = new Audio("src/static/sounds/coin.mp3")
+                coinSound.play()
                 coin.destroy()
             })
             let up=false
@@ -242,9 +242,18 @@ export function loadGOScene(){
         ]);
         add([
             text("Game Over!"),
-            pos(width() / 2, height() / 2),
+            scale(2),
+            pos(width() / 2, height() / 3),
             origin("center")
         ]);
+ 
+        const plAgain = document.querySelector(".restart")
+        plAgain.style.opacity="1"
+        plAgain.classList.add("dis3")
+        plAgain.addEventListener("click",()=>{
+            plAgain.style.opacity="0"
+            go("game")
+        })
     });
 }
  

@@ -49,7 +49,12 @@ const musicToggle = document.querySelector(".musicButton").addEventListener("cli
 //start
 const noCanvas = document.querySelector("#canvas")
 const play = document.querySelector("#playButton").addEventListener("click",()=>{
+    const starMusic = new Audio("src/static/sounds/start.mp3")
     noCanvas.classList.add("disappear")
+    starMusic.play()
+    setTimeout(()=>{
+        music.play()
+    },500)
     go("game")
     setTimeout(()=>{
         noCanvas.remove()
