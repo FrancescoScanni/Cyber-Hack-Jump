@@ -8,6 +8,7 @@ export function loadingSprites(k) {
     k.loadSprite("malware","assets/sprite/malware.png")
     k.loadSprite("x2","assets/sprite/x2.png")
     k.loadSprite("clock","assets/sprite/clock.png")
+    k.loadSprite("win","assets/sprite/winBg.png")
     blockNamesGround.forEach(name => k.loadSprite(name, `assets/sprite/ground/${name}.png`));
     players.forEach(name => k.loadSprite(name, `assets/sprite/characters/${name}.png`));
 }

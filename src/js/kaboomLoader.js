@@ -10,7 +10,7 @@ const k = kaboom({
     global: true,
 });
 gravity(1200);
-export default k 
+export default k
 
 
 
@@ -20,10 +20,11 @@ export default k
 import {loadingSprites, blockNamesGround, players} from './sprites.js'
 loadingSprites(k)
 //scenes
-import {loadStartingScene, loadGameScene, loadGOScene} from "./scenes.js"
+import {loadStartingScene, loadGameScene, loadGOScene, loadWScene } from "./scenes.js"
 loadStartingScene(k)
 loadGameScene(k)
 loadGOScene(k)
+loadWScene(k)
 
 
 
@@ -47,6 +48,7 @@ const musicToggle = document.querySelector(".musicButton").addEventListener("cli
 
 
 //start
+const canvas = document.querySelector("canvas")
 const noCanvas = document.querySelector("#canvas")
 const score = document.querySelector(".score")
 const message = document.querySelector("#advice")
@@ -57,7 +59,9 @@ const play = document.querySelector("#playButton").addEventListener("click",()=>
     setTimeout(()=>{
         //music.play()
     },500)
+    
     go("game")
+    canvas.focus()
     setTimeout(()=>{
         noCanvas.remove()
     },500)

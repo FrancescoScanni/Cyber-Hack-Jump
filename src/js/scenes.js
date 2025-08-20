@@ -1,5 +1,10 @@
 //importing sprites
 import { loadingSprites, blockNamesGround, players } from "./sprites.js";
+//importing sounds
+import { gameover,coinSound,x2Sound,speed,win } from "./sounds.js";
+
+
+
 
 //scene 0
 export function loadStartingScene() {
@@ -7,6 +12,7 @@ export function loadStartingScene() {
         add([
             sprite("bg", { width: width(), height: height() })
         ]);
+        const noCanvas = document.querySelector("#canvas")
     });
 }
 
@@ -16,7 +22,7 @@ export function loadStartingScene() {
 export function loadGameScene() {
     scene("game", () => {
         const bg = add([ sprite("bg", { width: width(), height: height() })]); 
-        const ground = add([ pos(0, height() - 50), rect(width()+5000, 30), area(), opacity(0), solid() ]) //base rect
+        const ground = add([ pos(0, height() - 50), rect(width()+5000, 30), area(), opacity(0), solid(), "ground" ]) //base rect
 
         const player = add([
             sprite(players[0]),
@@ -31,14 +37,12 @@ export function loadGameScene() {
         const totScore = document.querySelector(".earned");
         let earnedCoins = 0;
         totScore.innerHTML = "0";
-
         // Animation
         let currentFrame = 0;
         loop(0.165, () => {
             currentFrame = (currentFrame + 1) % players.length;
             player.use(sprite(players[currentFrame]));
         });
-
         // Movement
         onKeyDown("right", () => {
             if (player.isGrounded()) {
@@ -47,7 +51,6 @@ export function loadGameScene() {
                 player.move(155, 0);
             }
         });
-
         // Double jump
         let jumps = 0;
         onKeyPress("space", () => {
@@ -58,24 +61,34 @@ export function loadGameScene() {
         });
         player.onUpdate(() => {
             if (player.isGrounded()) jumps = 0;
+            if (player.pos.x < -100) {
+                gameover.play()
+                go("gameover")
+            }
         });
-
         // Collisions
-        player.onCollide("platform", () => {
-            player.move(-50, 0);
+        setTimeout(()=>{
+            player.onCollide("ground", () => {
+            gameover.play()
+            go("gameover")
         });
-
+        },5000)
+        
 
 
         // Block spawning
         let previous = "block4_grJump";
         let lastBlock = null;
         let x2Active = false
+        let blockSpeed = 200;
+        let activeBlocks = []
+        let cycle =0
+        const gearMessage=document.querySelector(".float")
 
         function spawnRndGRBlock() {
             let bkName = choose(blockNamesGround);
             let blockY = 580;
-            let blockSpeed = 200;
+            
 
             if (["block4_grJump", "block4_grJump1", "block4_grJump2"].includes(previous)) {
                 bkName = "block1_small";
@@ -85,6 +98,23 @@ export function loadGameScene() {
 
             previous = bkName;
             let spawnX = lastBlock ? lastBlock.pos.x + lastBlock.realWidth : width();
+
+
+            //player's jump and sprite
+            if(cycle===0){
+                bkName="block1_small"
+                let jumpUp = add([
+                    sprite("jump"),
+                    pos(spawnX-200, blockY-155),
+                    move(LEFT, blockSpeed),
+                    scale(0.32)
+                ])
+                jumpUp.onUpdate(() => {
+                    jumpUp.pos.y += Math.sin(time() * 5) * 0.5;
+                });
+            }
+            cycle++
+
 
             //BLOCK CONF
             const block = add([
@@ -96,13 +126,18 @@ export function loadGameScene() {
                 move(LEFT, blockSpeed),
                 "platform",
             ]);
+            activeBlocks.push(block)
+                    block.onDestroy(() => {
+                activeBlocks = activeBlocks.filter(b => b !== block)
+            })
             block.realWidth = block.width * block.scale.x;
+
 
             // Coin
             let alradySpawned=false
             let mlwAlready = false
             let coinAlr =false
-            if (rand(0, 1) < 0.50) {
+            if (rand(0, 1) < 0.60) {
                 alradySpawned=true
                 const coin = add([
                     sprite("coin"),
@@ -112,25 +147,29 @@ export function loadGameScene() {
                     move(LEFT, blockSpeed),
                     "coin"
                 ]);
+                activeBlocks.push(coin)
                 coin.onCollide("player", () => {
-                    const coinSound = new Audio("src/static/sounds/coin.mp3") 
                     coinSound.play()
                     if(x2Active){
                         earnedCoins+=2
                         setTimeout(() => {
                             totScore.style.color = "white"
                             x2Active=false
-                        }, 10000);
-                        
+                        }, 10000);  
                     }else{
-                        earnedCoins++;
+                        earnedCoins++;            
+                        console.log(earnedCoins)
                         totScore.style.color = "#02fa44";
-                        setTimeout(() => totScore.style.color = "white", 300);
+                        setTimeout(() => totScore.style.color = "white", 300);    
                     }
                     totScore.innerHTML = earnedCoins;
                     destroy(coin);
                 });
                 coin.onUpdate(() => {
+                    if(earnedCoins>=30){
+                        win.play()
+                        go("win")
+                    }
                     coin.pos.y += Math.sin(time() * 5) * 0.5
                 });
             }
@@ -145,9 +184,9 @@ export function loadGameScene() {
                     move(LEFT, blockSpeed),
                     "malware"
                 ]);
+                activeBlocks.push(malware)
                 malware.onCollide("player",()=>{
-                    const failMusic = new Audio("src/static/sounds/fail.mp3")
-                    failMusic.play()
+                    gameover.play()
                     go("gameover")
                 })
                 malware.onUpdate(() => {
@@ -155,7 +194,7 @@ export function loadGameScene() {
                 });
             }
             // x2
-            if (rand(0, 1) < 0.3 && !alradySpawned && !mlwAlready) {
+            if (rand(0, 1) < 0.4 && !alradySpawned && !mlwAlready) {
                 coinAlr=true
                 const x2 = add([
                     sprite("x2"),
@@ -165,9 +204,18 @@ export function loadGameScene() {
                     move(LEFT, blockSpeed),
                     "x2"
                 ]);
+                activeBlocks.push(x2)
                 x2.onCollide("player",()=>{
-                    const failMusic = new Audio("src/static/sounds/fail.mp3")
-                    failMusic.play()
+                    //gear message
+                    gearMessage.innerHTML="Gold Fever! (double coins for 10 s)"
+                    gearMessage.style.color="rgba(255, 255, 0, 1)"
+                    gearMessage.classList.remove("scale-0")
+                    gearMessage.classList.add("scale-50")
+                    setTimeout(()=>{
+                        gearMessage.classList.add("scale-0")
+                        gearMessage.classList.remove("scale-50")
+                    },1250)
+                    x2Sound.play()
                     totScore.style.color = "#fff700ff";
                     x2Active=true
                     x2.destroy()
@@ -176,21 +224,36 @@ export function loadGameScene() {
                     x2.pos.x += Math.sin(time() * 5) * 0.5;
                 });
             }
-
             //clock speed boost
-            if (rand(0, 1) < 0.4 && !alradySpawned && !mlwAlready && !coinAlr) {
+            if (rand(0, 1) < 0.55 && !alradySpawned && !mlwAlready && !coinAlr) {
                 const clock = add([
                     sprite("clock"),
                     pos(spawnX + block.realWidth / 2, blockY - 100),
-                    scale(0.4),
+                    scale(0.15),
                     area(),
                     move(LEFT, blockSpeed),
                     "clock"
                 ]);
+                activeBlocks.push(clock)
                 clock.onCollide("player",()=>{
-                    const speed = new Audio("src/static/sounds/fail.mp3")
+                    //gear message
+                    gearMessage.innerHTML="Speed Surge! (blocks are faster for 5s)"
+                    gearMessage.style.color="rgba(255, 255, 0, 1)"
+                    gearMessage.classList.remove("scale-0")
+                    gearMessage.classList.add("scale-50")
+                    setTimeout(()=>{
+                        gearMessage.classList.add("scale-0")
+                        gearMessage.classList.remove("scale-50")
+                    },1250)
                     speed.play()
-                    totScore.style.color = "#fff700ff";
+                    blockSpeed=300
+                    activeBlocks.forEach(b => b.use(move(LEFT, blockSpeed)))
+                    let speedBost = setTimeout(() => {
+                        blockSpeed = 200
+                        activeBlocks.forEach(b => b.use(move(LEFT, blockSpeed)))
+                        
+                    }, 5000)
+                    clearTimeout(speedBost)
                     clock.destroy()
                 })
                 clock.onUpdate(() => {
@@ -218,10 +281,13 @@ export function loadGameScene() {
 
 
 
+
 //scene 2
 export function loadGOScene() {
     const plAgainDiv = document.querySelector(".restartDiv");
     const plAgain = document.querySelector(".restart");
+    const canvas = document.querySelector("canvas")
+    canvas.focus()
 
     scene("gameover", () => {
         add([
@@ -235,6 +301,25 @@ export function loadGOScene() {
     plAgain.onclick = () => {
         plAgain.style.opacity = "0";
         plAgainDiv.style.opacity = "0";
-        go("game");
+        window.location.href="index.html"
     };
+}
+
+
+
+
+//scene 3
+export function loadWScene(){
+    const winBanner = document.querySelector(".winDiv")
+    const winTitle=document.querySelector(".win")
+    const winP = document.querySelector(".pWin")
+    scene("win", () => {
+        add([
+            sprite("win", { width: width()+100, height: height() })
+        ]);
+        winBanner.style.opacity="1"
+        winTitle.style.opacity="1"
+        winP.style.opacity="1" 
+    });
+    
 }
