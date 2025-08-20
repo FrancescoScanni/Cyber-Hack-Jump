@@ -1,38 +1,23 @@
 //importing sprites
-import { loadingSprites,blockNamesGround,players} from "./sprites.js";
-
+import { loadingSprites, blockNamesGround, players } from "./sprites.js";
 
 //scene 0
-export function loadStartingScene(){
-    scene("start",()=>{
-        const bg = add([
+export function loadStartingScene() {
+    scene("start", () => {
+        add([
             sprite("bg", { width: width(), height: height() })
         ]);
-    })
+    });
 }
 
-//scene 1
-export function loadGameScene(){
-    scene("game", () => {
 
-        //floating message
-        const message = document.querySelector("#advice")
-        setTimeout(()=>{
-            message.style.opacity="1"
-        },700)
-        setTimeout(()=>{
-            message.style.opacity="0"
-        },7000)
-        const bg = add([
-            sprite("bg", { width: width(), height: height() })
-        ]) //background
-        const ground = add([
-            pos(0, height() - 50),
-            rect(width()+5000, 30),
-            area(),
-            opacity(0),
-            solid()
-        ]) //base rect
+
+//scene 1
+export function loadGameScene() {
+    scene("game", () => {
+        const bg = add([ sprite("bg", { width: width(), height: height() })]); 
+        const ground = add([ pos(0, height() - 50), rect(width()+5000, 30), area(), opacity(0), solid() ]) //base rect
+
         const player = add([
             sprite(players[0]),
             pos(150, height() - 190),
@@ -42,218 +27,214 @@ export function loadGameScene(){
             "player"
         ]);//player
 
+        // Score
+        const totScore = document.querySelector(".earned");
+        let earnedCoins = 0;
+        totScore.innerHTML = "0";
 
-        //PLAYER RUNNING ANIMATION
+        // Animation
         let currentFrame = 0;
-        setInterval(() => {
+        loop(0.165, () => {
             currentFrame = (currentFrame + 1) % players.length;
             player.use(sprite(players[currentFrame]));
-        }, 165);
-        //movement
-        onKeyDown("right", () => {
-        if (!player.isGrounded()) {
-            player.move(300, 0);
-        } else {
-            player.move(155, 0);
-        }
         });
-        //blocks dragging
-        player.onCollide("platform", ()=>{
-            player.move(-50,0)
-        })  
-        //score
 
-        //death
-        player.onCollide("malware", ()=>{
-            const failMusic = new Audio("src/static/sounds/fail.mp3")
-            failMusic.play()
-            go("gameover")
-        }) 
-        
-        
-        //BLOCKS SPAWNING
+        // Movement
+        onKeyDown("right", () => {
+            if (player.isGrounded()) {
+                player.move(250, 0);
+            } else {
+                player.move(155, 0);
+            }
+        });
+
+        // Double jump
+        let jumps = 0;
+        onKeyPress("space", () => {
+            if (jumps < 2) {
+                player.jump(700);
+                jumps++;
+            }
+        });
+        player.onUpdate(() => {
+            if (player.isGrounded()) jumps = 0;
+        });
+
+        // Collisions
+        player.onCollide("platform", () => {
+            player.move(-50, 0);
+        });
+
+
+
+        // Block spawning
         let previous = "block4_grJump";
         let lastBlock = null;
-        let cycle = 0
-        let spawnX;
-        let blockY = 580;
-        //
+        let x2Active = false
+
         function spawnRndGRBlock() {
-        let blockSpeed = 190;
-        let bkName = choose(blockNamesGround);
-          
-        if (previous === "block4_grJump" || previous === "block4_grJump1" || previous === "block4_grJump2") {
-            bkName = choose(["block1_small", "block5_fire", "block5_spike"]);
-        }
-        if (previous === "block5_fire" || previous === "block5_spike") {
-            bkName = "block1_small";
-        }
-        switch(bkName){
-            case "block4_grJump2":
-                blockY = 500;
-                break
-            case "block4_grJump":
-                blockY = 499;
-                break
-            case "block4_grJump1":
-                blockY = 499;
-                break
-            case "block5_fire":
-                blockY = 517;
-                break
-            case "block5_spike":
-                blockY = 540.3;
-                break
-        }
-        previous = bkName;
-        if (lastBlock) {
-            spawnX = lastBlock.pos.x + lastBlock.realWidth
-        } else {
-            spawnX = width()
-        }
+            let bkName = choose(blockNamesGround);
+            let blockY = 580;
+            let blockSpeed = 200;
 
-        //the first block is always the standard one
-        let jumpUp
-        let up_down =false
-        //player's jump and sprite
-        if(cycle===0){
-            bkName="block1_small"
-            jumpUp = add([
-                sprite("jump"),
-                pos(spawnX, blockY-155),
-                move(LEFT, blockSpeed),
-                scale(0.32)
-            ])
-            setInterval(() => {
-                if(!up_down){
-                    jumpUp.pos.y += 20;
-                    up_down=true
-                }
-                else{
-                    jumpUp.pos.y -= 20;
-                    up_down=false
-                }
-                
-            }, 700);
-            spawnX+=200
-        }
-        onKeyPress(["space", "up", "w"], () => {
-            if (player.isGrounded()) {
-                player.jump(720);
-                destroy(jumpUp)
+            if (["block4_grJump", "block4_grJump1", "block4_grJump2"].includes(previous)) {
+                bkName = "block1_small";
             }
-        });
-        cycle++
+            if (bkName === "block4_grJump2") blockY = 500;
+            if (bkName === "block4_grJump" || bkName === "block4_grJump1") blockY = 499;
 
+            previous = bkName;
+            let spawnX = lastBlock ? lastBlock.pos.x + lastBlock.realWidth : width();
 
-        //BLOCKS VARIABLE PROPERTIES
-        const block = add([
-            sprite(bkName),
-            pos(spawnX, blockY),
-            scale(0.35),
-            area(),
-            body(),
-            move(LEFT, blockSpeed),
-            "platform",
-        ]);
-        
-
-        //COINS GENERATION
-        const realWidth = block.width * block.scale.x;
-        block.realWidth = realWidth;
-        let coinAlready=false
-        if (Math.floor(Math.random() * 3) === 1) {
-            coinAlready=true
-            const coin = add([
-                sprite("coin"),
-                pos(spawnX + realWidth / 2, blockY - 100),
-                scale(0.1),
+            //BLOCK CONF
+            const block = add([
+                sprite(bkName),
+                pos(spawnX, blockY),
+                scale(0.35),
                 area(),
+                body({ isStatic: true }),
                 move(LEFT, blockSpeed),
-                "coin"
+                "platform",
             ]);
-            coin.onCollide("player",()=>{
-                const coinSound = new Audio("src/static/sounds/coin.mp3")
-                coinSound.play()
-                coin.destroy()
-            })
-            let up=false
-            setInterval(()=>{
-                if(up){
-                    coin.pos.y-=5
-                    up=false
-                }else{
-                    coin.pos.y+=5
-                    up=true
-                }
-            },500)
-        }
-        else{
-            coinAlready=false
-        }
+            block.realWidth = block.width * block.scale.x;
+
+            // Coin
+            let alradySpawned=false
+            let mlwAlready = false
+            let coinAlr =false
+            if (rand(0, 1) < 0.50) {
+                alradySpawned=true
+                const coin = add([
+                    sprite("coin"),
+                    pos(spawnX + block.realWidth / 2, blockY - 100),
+                    scale(0.1),
+                    area(),
+                    move(LEFT, blockSpeed),
+                    "coin"
+                ]);
+                coin.onCollide("player", () => {
+                    const coinSound = new Audio("src/static/sounds/coin.mp3") 
+                    coinSound.play()
+                    if(x2Active){
+                        earnedCoins+=2
+                        setTimeout(() => {
+                            totScore.style.color = "white"
+                            x2Active=false
+                        }, 10000);
+                        
+                    }else{
+                        earnedCoins++;
+                        totScore.style.color = "#02fa44";
+                        setTimeout(() => totScore.style.color = "white", 300);
+                    }
+                    totScore.innerHTML = earnedCoins;
+                    destroy(coin);
+                });
+                coin.onUpdate(() => {
+                    coin.pos.y += Math.sin(time() * 5) * 0.5
+                });
+            }
+            // Malware
+            if (rand(0, 1) < 0.4 && !alradySpawned) {
+                mlwAlready=true
+                const malware = add([
+                    sprite("malware"),
+                    pos(spawnX + block.realWidth / 2, blockY - 100),
+                    scale(0.15),
+                    area(),
+                    move(LEFT, blockSpeed),
+                    "malware"
+                ]);
+                malware.onCollide("player",()=>{
+                    const failMusic = new Audio("src/static/sounds/fail.mp3")
+                    failMusic.play()
+                    go("gameover")
+                })
+                malware.onUpdate(() => {
+                    malware.pos.x += Math.sin(time() * 5) * 0.5;
+                });
+            }
+            // x2
+            if (rand(0, 1) < 0.3 && !alradySpawned && !mlwAlready) {
+                coinAlr=true
+                const x2 = add([
+                    sprite("x2"),
+                    pos(spawnX + block.realWidth / 2, blockY - 100),
+                    scale(0.15),
+                    area(),
+                    move(LEFT, blockSpeed),
+                    "x2"
+                ]);
+                x2.onCollide("player",()=>{
+                    const failMusic = new Audio("src/static/sounds/fail.mp3")
+                    failMusic.play()
+                    totScore.style.color = "#fff700ff";
+                    x2Active=true
+                    x2.destroy()
+                })
+                x2.onUpdate(() => {
+                    x2.pos.x += Math.sin(time() * 5) * 0.5;
+                });
+            }
+
+            //clock speed boost
+            if (rand(0, 1) < 0.4 && !alradySpawned && !mlwAlready && !coinAlr) {
+                const clock = add([
+                    sprite("clock"),
+                    pos(spawnX + block.realWidth / 2, blockY - 100),
+                    scale(0.4),
+                    area(),
+                    move(LEFT, blockSpeed),
+                    "clock"
+                ]);
+                clock.onCollide("player",()=>{
+                    const speed = new Audio("src/static/sounds/fail.mp3")
+                    speed.play()
+                    totScore.style.color = "#fff700ff";
+                    clock.destroy()
+                })
+                clock.onUpdate(() => {
+                    clock.pos.x += Math.sin(time() * 5) * 0.5;
+                });
+            }
+            alradySpawned=false
+            mlwAlready=false
+            coinAlr=false
 
 
-        //MALWARE GENERATION
-        if (Math.floor(Math.random() * 12) === 1 && !coinAlready) {
-            const malware = add([
-                sprite("malware"),
-                pos(spawnX + realWidth / 2, blockY - 100),
-                scale(0.15),
-                area(),
-                move(LEFT, blockSpeed),
-                "malware"
-            ]);
-            let up=false
-            setInterval(()=>{
-                if(up){
-                    malware.pos.x-=7
-                    up=false
-                }else{
-                    malware.pos.x+=7
-                    up=true
-                }
-            },500)
-        }
-
-
-        //BLOCKS IN SEQUENCE
-        block.onUpdate(() => {
-            if (!block.spawnedNext && (block.pos.x + block.width) < width()+5000) {
-                    block.spawnedNext=true
+            // Spawn next
+            block.onUpdate(() => {
+                if (!block.spawnedNext && block.pos.x + block.realWidth < width()) {
+                    block.spawnedNext = true;
                     spawnRndGRBlock();
-            }
-            if (block.pos.x < -block.realWidth) {
-                destroy(block);
-            }
-        });
-        lastBlock = block;
-    }
-    spawnRndGRBlock();
-
-    
-});
-}
-
-//scene 2
-export function loadGOScene(){
-    scene("gameover", () => {
-         const bg = add([
-            sprite("bg", { width: width(), height: height() })
-        ]);
-        add([
-            text("Game Over!"),
-            scale(2),
-            pos(width() / 2, height() / 3),
-            origin("center")
-        ]);
- 
-        const plAgain = document.querySelector(".restart")
-        plAgain.style.opacity="1"
-        plAgain.classList.add("dis3")
-        plAgain.addEventListener("click",()=>{
-            plAgain.style.opacity="0"
-            go("game")
-        })
+                }
+                if (block.pos.x < -block.realWidth) destroy(block);
+            });
+            lastBlock = block;
+        }
+        spawnRndGRBlock();
     });
 }
- 
+
+
+
+//scene 2
+export function loadGOScene() {
+    const plAgainDiv = document.querySelector(".restartDiv");
+    const plAgain = document.querySelector(".restart");
+
+    scene("gameover", () => {
+        add([
+            sprite("bg", { width: width(), height: height() })
+        ]); 
+        plAgain.style.opacity = "1";
+        plAgainDiv.style.opacity = "1";
+    });
+
+    // register click ONCE
+    plAgain.onclick = () => {
+        plAgain.style.opacity = "0";
+        plAgainDiv.style.opacity = "0";
+        go("game");
+    };
+}

@@ -11,8 +11,14 @@
 <body class="w-[100vw] h-[100vh] overflow-hidden">
     <audio class="music" src="src/static/sounds/soundtrack.mp3"></audio>
 
+    <!--Score-->
+    <div class="score absolute ml-[6vh] mt-[6vh] flex items-center opacity-0 transition duration-200">
+        <img src="/src/static/images/coin.png" class="w-[56px] h-[56px] ">
+        <p class="earned ml-[15px] text-[#ffffff] text-[32px]">0</p>
+    </div>
+
     <!--Floating message-->
-    <div id="advice" class="advice absolute mt-[17vh] flex inline w-[100vw] justify-center tracking-[0px] opacity-0 transition duration-500">
+    <div id="advice" class="advice absolute mt-[17vh] flex flex-col inline w-[100vw] items-center tracking-[0px] opacity-0 transition duration-500">
         <h1 class="text-[#ffffff] text-[26px] flex items-center gap-2 text-center">
             Press 
             <img src="src/static/images/spacebar.png" class="mx-[10px] w-[140px] h-[70px] object-contain" />
@@ -20,13 +26,14 @@
             <img src="src/static/images/mvForward.png" class="mx-[10px] w-[70px] h-[70px] object-contain" />
             to move forward
         </h1>
+        <p class="text-[#ffffff] text-[18px] flex items-center gap-2 text-center mt-[5vh]">Touch the character to enable the commands</p>
     </div>
 
     <!--Restart message-->
-    <div class="absolute mt-[45vh] flex inline w-[100vw] justify-center tracking-[0px]">
+    <div class="restartDiv absolute mt-[30vh] flex flex-col inline w-[100vw] items-center tracking-[0px] opacity-0">
+        <h1 class="go ml-[15px] text-[#ffffff] text-[86px]">Game Over</h1>
         <img src="src\static\images\again.png" class="restart w-[180px] h-[150px] opacity-0 hover:scale-105 transition duration-200">
     </div>
-
 
     <!--Main content-->
     <div id="canvas" class="w-[100vw] h-[100vh] absolute flex justify-center align-center grid grid-cols-3">
