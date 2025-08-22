@@ -119,7 +119,7 @@ export function loadGameScene() {
             //BLOCK CONF
             const block = add([
                 sprite(bkName),
-                pos(spawnX+10, blockY),
+                pos(spawnX+5, blockY),
                 scale(0.35),
                 area(),
                 body({ isStatic: true }),
@@ -141,7 +141,7 @@ export function loadGameScene() {
                 alradySpawned=true
                 const coin = add([
                     sprite("coin"),
-                    pos(spawnX + block.realWidth / 2, blockY - 100),
+                    pos(spawnX + block.realWidth / 2, blockY - (height()/6)),
                     scale(0.1),
                     area(),
                     move(LEFT, blockSpeed),
@@ -178,7 +178,7 @@ export function loadGameScene() {
                 mlwAlready=true
                 const malware = add([
                     sprite("malware"),
-                    pos(spawnX + block.realWidth / 2, blockY - 100),
+                    pos(spawnX + block.realWidth / 2, blockY - (height()/6)),
                     scale(0.15),
                     area(),
                     move(LEFT, blockSpeed),
@@ -198,7 +198,7 @@ export function loadGameScene() {
                 coinAlr=true
                 const x2 = add([
                     sprite("x2"),
-                    pos(spawnX + block.realWidth / 2, blockY - 100),
+                    pos(spawnX + block.realWidth / 2, blockY - (height()/6)),
                     scale(0.15),
                     area(),
                     move(LEFT, blockSpeed),
@@ -228,7 +228,7 @@ export function loadGameScene() {
             if (rand(0, 1) < 0.55 && !alradySpawned && !mlwAlready && !coinAlr) {
                 const clock = add([
                     sprite("clock"),
-                    pos(spawnX + block.realWidth / 2, blockY - 100),
+                    pos(spawnX + block.realWidth / 2, blockY - (height()/6)),
                     scale(0.15),
                     area(),
                     move(LEFT, blockSpeed),
