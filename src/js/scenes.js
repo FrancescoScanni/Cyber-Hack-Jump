@@ -119,7 +119,7 @@ export function loadGameScene() {
             //BLOCK CONF
             const block = add([
                 sprite(bkName),
-                pos(spawnX, blockY),
+                pos(spawnX+10, blockY),
                 scale(0.35),
                 area(),
                 body({ isStatic: true }),
